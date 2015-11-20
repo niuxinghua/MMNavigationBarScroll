@@ -418,6 +418,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MMNavigationBarScroll/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zlmg.MMNavigationBarScroll;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -429,6 +430,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MMNavigationBarScroll/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zlmg.MMNavigationBarScroll;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -502,6 +504,7 @@
 				4BDD8B661BFCED30008B7856 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4BDD8B671BFCED30008B7856 /* Build configuration list for PBXNativeTarget "MMNavigationBarScrollTests" */ = {
 			isa = XCConfigurationList;
@@ -510,6 +513,7 @@
 				4BDD8B691BFCED30008B7856 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4BDD8B6A1BFCED30008B7856 /* Build configuration list for PBXNativeTarget "MMNavigationBarScrollUITests" */ = {
 			isa = XCConfigurationList;
@@ -518,6 +522,7 @@
 				4BDD8B6C1BFCED30008B7856 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

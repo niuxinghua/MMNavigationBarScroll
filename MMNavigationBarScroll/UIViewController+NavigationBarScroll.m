@@ -12,7 +12,7 @@
 static NSString * const kMMScrollViewKey = @"kMMScrollViewKey";
 static NSString * const kMMScrollViewOldOffsetYKey = @"kMMScrollViewOldOffsetYKey";
 static NSString * const kMMScrollViewEndKey =  @"kMMScrollViewEndKey";
-static CGFloat const scrollSpace = 45;
+static CGFloat const scrollSpace = 25;
 
 @interface UIViewController()
 
@@ -27,8 +27,6 @@ static CGFloat const scrollSpace = 45;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == @"mmScrollView") {
-        NSLog(@"mmScrollView.offset.y = %@",change);
-        NSLog(@"oldOffsetY = %f , newOffsetY = %f",self.oldOffsetY,self.mm_ScrollView.contentOffset.y);
         //滚动结束、上拉刷新、下拉加载时不进行操作
         if (self.isEndNavigation ||
             self.mm_ScrollView.contentOffset.y - self.mm_ScrollView.contentInset.top < 0 ||
@@ -38,28 +36,34 @@ static CGFloat const scrollSpace = 45;
         }
         //隐藏navigation和stateBar
         if (self.mm_ScrollView.contentOffset.y - scrollSpace > self.oldOffsetY) {
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+//            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+            [self setNeedsStatusBarAppearanceUpdate];
             [UIView animateWithDuration:0.5 animations:^{
+                //隐藏导航栏
                 CGRect frame = self.navigationController.navigationBar.frame;
                 frame.origin.y = -44;
                 self.navigationController.navigationBar.frame = frame;
-            } completion:^(BOOL finished) {
-                [UIView animateWithDuration:0.5 animations:^{
-                    self.navigationController.navigationBarHidden = YES;
-                }];
-            }];
+            } ];
+            //调整inset
+            UIEdgeInsets insets = self.mm_ScrollView.contentInset;
+            insets.top = 0;
+            self.mm_ScrollView.contentInset = insets;
             self.oldOffsetY = self.mm_ScrollView.contentOffset.y;
         }
         //显示navigation和stateBar
         else if(self.mm_ScrollView.contentOffset.y + scrollSpace < self.oldOffsetY) {
-            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
-            //显示导航栏
-            CGRect frame = self.navigationController.navigationBar.frame;
-            frame.origin.y = 20;
-            self.navigationController.navigationBar.frame = frame;
+//            [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+            [self setNeedsStatusBarAppearanceUpdate];
             [UIView animateWithDuration:0.5 animations:^{
-                self.navigationController.navigationBarHidden = NO;
+                //显示导航栏
+                CGRect frame = self.navigationController.navigationBar.frame;
+                frame.origin.y = 20;
+                self.navigationController.navigationBar.frame = frame;
             }];
+            //调整inset
+            UIEdgeInsets insets = self.mm_ScrollView.contentInset;
+            insets.top = 64;
+            self.mm_ScrollView.contentInset = insets;
             self.oldOffsetY = self.mm_ScrollView.contentOffset.y;
         }
     } else {
@@ -67,7 +71,12 @@ static CGFloat const scrollSpace = 45;
     }
 }
 
--(void)showNavigationAndStateBar
+-(void)startNavigationScroll
+{
+    self.isEndNavigation = NO;
+}
+
+-(void)endNavigationScroll
 {
     self.isEndNavigation = YES;
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
@@ -79,13 +88,6 @@ static CGFloat const scrollSpace = 45;
 {
     [self.mm_ScrollView removeObserver:self forKeyPath:@"contentOffset"];
 }
-
-#warning 测试
--(BOOL)prefersStatusBarHidden
-{
-    return YES;
-}
-
 #pragma mark - 属性方法
 -(UIScrollView *)mm_ScrollView
 {
@@ -97,7 +99,11 @@ static CGFloat const scrollSpace = 45;
     objc_setAssociatedObject(self, &kMMScrollViewKey, mm_ScrollView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     [mm_ScrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:@"mmScrollView"];
     self.isEndNavigation = NO;
-    self.automaticallyAdjustsScrollViewInsets = YES;
+    //代码调整inset
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    UIEdgeInsets insets = self.mm_ScrollView.contentInset;
+    insets.top = 64;
+    self.mm_ScrollView.contentInset = insets;
 }
 
 -(CGFloat)oldOffsetY
@@ -122,6 +128,17 @@ static CGFloat const scrollSpace = 45;
 {
     NSNumber *isEnd = [NSNumber numberWithBool:isEndNavigation];
     objc_setAssociatedObject(self, &kMMScrollViewEndKey, isEnd, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+-(BOOL)prefersStatusBarHidden
+{
+    if (self.mm_ScrollView.contentOffset.y - scrollSpace > self.oldOffsetY) {
+        return YES;
+    }
+    else if(self.mm_ScrollView.contentOffset.y + scrollSpace < self.oldOffsetY) {
+        NO;
+    }
+    return NO;
 }
 
 @end

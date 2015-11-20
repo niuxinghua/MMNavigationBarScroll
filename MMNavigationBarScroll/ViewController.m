@@ -31,10 +31,15 @@ static NSString * const KCellReuseId = @"uitableViewCellReuseId";
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [self startNavigationScroll];
+}
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self showNavigationAndStateBar];
+    [self endNavigationScroll];
 }
 
 -(void)dealloc
